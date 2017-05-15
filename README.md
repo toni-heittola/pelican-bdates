@@ -86,6 +86,7 @@ Example yaml-file:
       title: Test 1
       category: category1
     - date: 1-12-2016
+      duration_days: 10
       title: Test 2
       url: test2
       category: category2

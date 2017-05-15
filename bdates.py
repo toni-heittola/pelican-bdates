@@ -136,11 +136,18 @@ def item_link(item, settings):
             item_color = ''
 
     template = Template(settings['item-template'][settings['mode']].strip('\t\r\n').replace('&gt;', '>').replace('&lt;', '<'))
+    if 'duration_days' not in item:
+        item_date = item['datetime'].strftime(settings['date-format'])
+    else:
+        start_date = item['datetime']
+        stop_date = item['datetime'] + datetime.timedelta(days=item['duration_days']-1)
+        item_date = start_date.strftime(settings['date-format'])+' - '+stop_date.strftime(settings['date-format'])
+
     html = BeautifulSoup(template.render(site_url=settings['site-url'],
                                          item_css=item_css,
                                          item_url=item['url'] if 'url' in item else '',
                                          item_title=item['title'],
-                                         item_date=item['datetime'].strftime(settings['date-format']),
+                                         item_date=item_date,
                                          item_color=item_color,
                                          ), "html.parser")
 
@@ -149,6 +156,7 @@ def item_link(item, settings):
 
 def generate(settings):
     dates = load_dates_registry(source=settings['data-source'])
+
     if dates:
         html = "\n"
         count = 0
