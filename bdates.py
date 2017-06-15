@@ -287,7 +287,7 @@ def process_page_metadata(generator, metadata):
         bdates_settings['mode'] = metadata['bdates_mode']
 
     if u'bdates_panel_color' in metadata:
-        bdates_settings['panel_color'] = metadata['bdates_panel_color']
+        bdates_settings['panel-color'] = metadata['bdates_panel_color']
 
     if u'bdates_header' in metadata:
         bdates_settings['header'] = metadata['bdates_header']
