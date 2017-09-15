@@ -45,14 +45,14 @@ bdates_default_settings = {
         """},
     'item-template': {
         'panel': """
-            <a class="list-group-item {{item_color}}" href="{{site_url}}/{{item_url}}">
+            <a class="list-group-item {{item_color}}" href="{{item_url}}">
             <div class="row">
                 <div class="col-md-12"><h5 class="list-group-item-heading {{item_css}}"><strong>{{item_date}}</strong></h5></div>
                 <div class="col-md-12"><h5 class="list-group-item-heading {{item_css}}">{{item_title}}</h5></div>
             </div>
             </a>
             """,
-        'list': """<a class="list-group-item {{item_color}}" href="{{site_url}}/{{item_url}}">
+        'list': """<a class="list-group-item {{item_color}}" href="{{item_url}}">
             <div class="row">
                 <div class="col-md-9"><h4 class="list-group-item-heading {{item_css}}">{{item_title}}</h4></div>
                 <div class="col-md-3"><h5 class="list-group-item-heading {{item_css}}"><strong>{{item_date}}</strong></h5></div>
@@ -143,9 +143,15 @@ def item_link(item, settings):
         stop_date = item['datetime'] + datetime.timedelta(days=item['duration_days']-1)
         item_date = start_date.strftime(settings['date-format'])+' - '+stop_date.strftime(settings['date-format'])
 
-    html = BeautifulSoup(template.render(site_url=settings['site-url'],
-                                         item_css=item_css,
-                                         item_url=item['url'] if 'url' in item else '',
+    url = ''
+    if 'url' in item:
+        if item['url'].startswith('http://') or item['url'].startswith('https://'):
+            url = item['url']
+        else:
+            url = settings['site-url'] + '/' + item['url']
+
+    html = BeautifulSoup(template.render(item_css=item_css,
+                                         item_url=url,
                                          item_title=item['title'],
                                          item_date=item_date,
                                          item_color=item_color,
