@@ -65,14 +65,7 @@ bdates_default_settings = {
             """,
         'list': """<a class="list-group-item {{item_color}}" href="{{item_url}}">
             <div class="row">
-                {% if item_category %}
-                <div class="col-md-1">
-                    {{item_category}}
-                </div>
-                <div class="col-md-8">
-                {% else %}
-                <div class="col-md-9">
-                {% endif %}                
+                <div class="col-md-9">                              
                     <h4 class="list-group-item-heading {{item_css}}">
                         {{item_title}}
                     </h4>
@@ -82,6 +75,11 @@ bdates_default_settings = {
                         <strong>{{item_date}}</strong>
                     </h5>
                 </div>
+                {% if item_category %}
+                <div class="col-md-12 col-sm-12">
+                {{item_category}}
+                </div>
+                {% endif %}  
             </div>
             </a>
         """},
@@ -226,23 +224,24 @@ def generate(settings):
         html = "\n"
         count = 0
         for item_id, item in enumerate(dates):
-            if settings['count'] and count < settings['count']:
-                if 'category' in bdates_settings and settings['category']:
-                    if item['category'] in settings['category']:
+            if settings['count']:
+                if count < settings['count']:
+                    if 'category' in settings and settings['category']:
+                        if item['category'] in settings['category']:
+                            html += item_link(
+                                item=item,
+                                settings=settings
+                            ) + "\n"
+
+                            count += 1
+
+                    else:
                         html += item_link(
                             item=item,
                             settings=settings
                         ) + "\n"
 
                         count += 1
-
-                else:
-                    html += item_link(
-                        item=item,
-                        settings=settings
-                    ) + "\n"
-
-                    count += 1
 
             else:
                 if 'category' in settings and settings['category']:
@@ -328,6 +327,7 @@ def bdates(content):
             settings['date-format'] = get_attribute(bdates_div.attrs, 'date-format', bdates_default_settings['date-format'])
 
             div_html = generate(settings=settings)
+
             bdates_div.replaceWith(div_html)
 
     if bdates_settings['show']:
