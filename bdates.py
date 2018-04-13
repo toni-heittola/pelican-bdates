@@ -47,27 +47,53 @@ bdates_default_settings = {
         'panel': """
             <a class="list-group-item {{item_color}}" href="{{item_url}}">
             <div class="row">
-                <div class="col-md-12"><h5 class="list-group-item-heading {{item_css}}"><strong>{{item_date}}</strong></h5></div>
-                <div class="col-md-12"><h5 class="list-group-item-heading {{item_css}}">{{item_title}}</h5></div>
+                <div class="col-md-12">
+                    <h5 class="list-group-item-heading {{item_css}}">
+                        <strong>{{item_date}}</strong>
+                    </h5>
+                </div>
+                <div class="col-md-12">
+                    <h5 class="list-group-item-heading {{item_css}}">
+                        {{item_title}}
+                    {% if item_category %}
+                        <small class="list-group-item-text text-muted pull-right">{{item_category}}</small>
+                    {% endif %}
+                    </h5>
+                </div>
             </div>
             </a>
             """,
         'list': """<a class="list-group-item {{item_color}}" href="{{item_url}}">
             <div class="row">
-                <div class="col-md-9"><h4 class="list-group-item-heading {{item_css}}">{{item_title}}</h4></div>
-                <div class="col-md-3"><h5 class="list-group-item-heading {{item_css}}"><strong>{{item_date}}</strong></h5></div>
+                {% if item_category %}
+                <div class="col-md-1">
+                    {{item_category}}
+                </div>
+                <div class="col-md-8">
+                {% else %}
+                <div class="col-md-9">
+                {% endif %}                
+                    <h4 class="list-group-item-heading {{item_css}}">
+                        {{item_title}}
+                    </h4>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="list-group-item-heading {{item_css}}">
+                        <strong>{{item_date}}</strong>
+                    </h5>
+                </div>
             </div>
             </a>
         """},
     'data-source': None,
     'category': None,
     'count': None,
-    'past-dates': 'muted', # None, muted
+    'past-dates': 'muted',
     'show': False,
     'minified': True,
     'generate_minified': True,
     'show-categories': False,
-    'shorten-category-label': True,
+    'shorten-category-label': False,
     'category-label-css': {},
     'template-variable': False,
     'site-url': '',
@@ -118,26 +144,32 @@ def get_attribute(attrs, name, default=None):
 
     if 'data-'+name in attrs:
         return attrs['data-'+name]
+
     else:
         return default
 
 
 def item_link(item, settings):
     past_date = item['datetime'] > datetime.datetime.now()
+
     if not past_date:
         item_css = 'text-muted'
         item_color = ''
+
     else:
         item_css = ''
         # only use colors for upcoming dates
         if 'color' in item:
             item_color = item['color']
+
         else:
             item_color = ''
 
     template = Template(settings['item-template'][settings['mode']].strip('\t\r\n').replace('&gt;', '>').replace('&lt;', '<'))
+
     if 'duration_days' not in item:
         item_date = item['datetime'].strftime(settings['date-format'])
+
     else:
         start_date = item['datetime']
         stop_date = item['datetime'] + datetime.timedelta(days=item['duration_days']-1)
@@ -147,15 +179,42 @@ def item_link(item, settings):
     if 'url' in item:
         if item['url'].startswith('http://') or item['url'].startswith('https://'):
             url = item['url']
+
         else:
             url = settings['site-url'] + '/' + item['url']
 
-    html = BeautifulSoup(template.render(item_css=item_css,
-                                         item_url=url,
-                                         item_title=item['title'],
-                                         item_date=item_date,
-                                         item_color=item_color,
-                                         ), "html.parser")
+    if settings['show-categories']:
+        if 'category' in item:
+            label = item['category']
+
+        if label.lower() in settings['category-label-css']:
+            item_category = '<span class="'+settings['category-label-css'][label.lower()]['label-css']+'">'
+
+        else:
+            item_category = '<span class="label label-default">'
+
+        if settings['shorten-category-label']:
+            item_category += label[:1].upper()
+
+        else:
+            item_category += label
+
+        item_category += '</span>'
+
+    else:
+        item_category = ''
+
+    html = BeautifulSoup(
+        template.render(
+            item_css=item_css,
+            item_url=url,
+            item_title=item['title'],
+            item_date=item_date,
+            item_color=item_color,
+            item_category=item_category
+        ),
+        "html.parser"
+    )
 
     return html.decode()
 
@@ -170,27 +229,52 @@ def generate(settings):
             if settings['count'] and count < settings['count']:
                 if 'category' in bdates_settings and settings['category']:
                     if item['category'] in settings['category']:
-                        html += item_link(item=item, settings=settings) + "\n"
+                        html += item_link(
+                            item=item,
+                            settings=settings
+                        ) + "\n"
+
                         count += 1
+
                 else:
-                    html += item_link(item=item, settings=settings) + "\n"
+                    html += item_link(
+                        item=item,
+                        settings=settings
+                    ) + "\n"
+
                     count += 1
+
             else:
                 if 'category' in settings and settings['category']:
                     if item['category'] in settings['category']:
-                        html += item_link(item=item, settings=settings) + "\n"
+                        html += item_link(
+                            item=item,
+                            settings=settings
+                        ) + "\n"
+
                         count += 1
                 else:
-                    html += item_link(item=item, settings=settings) + "\n"
+                    html += item_link(
+                        item=item,
+                        settings=settings
+                    ) + "\n"
+
                     count += 1
+
         html += "\n"
         template = Template(settings['template'][settings['mode']].strip('\t\r\n').replace('&gt;', '>').replace('&lt;', '<'))
 
         if count:
-            return BeautifulSoup(template.render(list=html,
-                                                 header=settings['header'],
-                                                 site_url=settings['site-url'],
-                                                 panel_color=settings['panel-color'],), "html.parser")
+            return BeautifulSoup(
+                template.render(
+                    list=html,
+                    header=settings['header'],
+                    site_url=settings['site-url'],
+                    panel_color=settings['panel-color']
+                ),
+                "html.parser"
+            )
+
         else:
             return ''
 
@@ -210,7 +294,10 @@ def bdates(content):
     if bdates_settings['template-variable']:
         # We have page variable set
         bdates_settings['show'] = True
-        div_html = generate(settings=bdates_settings)
+        div_html = generate(
+            settings=bdates_settings
+        )
+
         content.bdates = div_html.decode()
 
     else:
@@ -228,6 +315,7 @@ def bdates(content):
             settings['mode'] = get_attribute(bdates_div.attrs, 'mode', bdates_settings['mode'])
             settings['header'] = get_attribute(bdates_div.attrs, 'header', bdates_settings['header'])
             settings['category'] = get_attribute(bdates_div.attrs, 'category', bdates_settings['category'])
+
             if settings['category'] and isinstance(settings['category'], basestring):
                 settings['category'] = [x.strip() for x in settings['category'].split(',')]
 
@@ -236,7 +324,7 @@ def bdates(content):
                 settings['count'] = int(settings['count'])
 
             settings['panel-color'] = get_attribute(bdates_div.attrs, 'panel-color', bdates_default_settings['panel-color'])
-            settings['show-categories'] = get_attribute(bdates_div.attrs, 'show-categories', bdates_default_settings['show-categories'])
+            settings['show-categories'] = get_attribute(bdates_div.attrs, 'show-categories', bdates_default_settings['show-categories']) in ['True', 'true']
             settings['date-format'] = get_attribute(bdates_div.attrs, 'date-format', bdates_default_settings['date-format'])
 
             div_html = generate(settings=settings)
@@ -282,6 +370,7 @@ def process_page_metadata(generator, metadata):
     if u'bdates' in metadata and (metadata['bdates'] == 'True' or metadata['bdates'] == 'true'):
         bdates_settings['show'] = True
         bdates_settings['template-variable'] = True
+
     else:
         bdates_settings['show'] = False
         bdates_settings['template-variable'] = False
@@ -336,6 +425,7 @@ def move_resources(gen):
 
             if os.path.isfile(css_target):
                 break
+
     else:
         css_target = os.path.join(gen.output_path, 'theme', 'css', 'bdates.css')
         if not os.path.exists(os.path.join(gen.output_path, 'theme', 'css')):
