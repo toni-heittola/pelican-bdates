@@ -96,6 +96,7 @@ bdates_default_settings = {
     'template-variable': False,
     'site-url': '',
     'date-format': '%d %b %Y',
+    'debug_processing': False
 }
 
 bdates_settings = copy.deepcopy(bdates_default_settings)
@@ -305,6 +306,13 @@ def bdates(content):
     bdates_divs = soup.find_all('div', class_='bdates')
 
     if bdates_divs:
+        if bdates_settings['debug_processing']:
+            logger.debug(msg='[{plugin_name}] title:[{title}] divs:[{div_count}]'.format(
+                plugin_name='bdates',
+                title=content.title,
+                div_count=len(bdates_divs)
+            ))
+
         bdates_settings['show'] = True
 
         for bdates_div in bdates_divs:
@@ -499,6 +507,9 @@ def init_default_config(pelican):
 
     if 'BDATES_GENERATE_MINIFIED' in pelican.settings:
         bdates_default_settings['generate_minified'] = pelican.settings['BDATES_GENERATE_MINIFIED']
+
+    if 'BDATES_DEBUG_PROCESSING' in pelican.settings:
+        bdates_default_settings['debug_processing'] = pelican.settings['BDATES_DEBUG_PROCESSING']
 
     bdates_settings = copy.deepcopy(bdates_default_settings)
 

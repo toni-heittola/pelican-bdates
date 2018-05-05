@@ -109,6 +109,7 @@ Parameters for the plugin can be set in `pelicanconf.py' with following paramete
 | BDATES_HEADER             | String    | Content       | Header text  |
 | BDATES_MINIFIED           | Boolean   | True          | Do we use minified CSS file. Disable in case of debugging.  |
 | BDATES_GENERATE_MINIFIED  | Boolean   | False         | CSS file is minified each time, Enable in case of development.   |
+| BDATES_DEBUG_PROCESSING   | Boolean   | False         | Show extra information in when run with `DEBUG=1` |
 
 ### Content wise parameters
 
