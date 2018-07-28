@@ -6,6 +6,7 @@ Author: Toni Heittola (toni.heittola@gmail.com)
 
 """
 
+from builtins import str
 import os
 import shutil
 import logging
@@ -228,7 +229,7 @@ def bdates(content):
             settings['mode'] = get_attribute(bdates_div.attrs, 'mode', bdates_settings['mode'])
             settings['header'] = get_attribute(bdates_div.attrs, 'header', bdates_settings['header'])
             settings['category'] = get_attribute(bdates_div.attrs, 'category', bdates_settings['category'])
-            if settings['category'] and isinstance(settings['category'], basestring):
+            if settings['category'] and isinstance(settings['category'], str):
                 settings['category'] = [x.strip() for x in settings['category'].split(',')]
 
             settings['count'] = get_attribute(bdates_div.attrs, 'count', bdates_settings['count'])
@@ -342,7 +343,6 @@ def move_resources(gen):
             os.makedirs(os.path.join(gen.output_path, 'theme', 'css'))
 
         for path in plugin_paths:
-            print path
             css_source = os.path.join(path, 'pelican-bdates', 'css', 'bdates.css')
 
             if os.path.isfile(css_source):
