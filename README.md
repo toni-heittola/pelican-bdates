@@ -101,7 +101,7 @@ Parameters for the plugin can be set in `pelicanconf.py' with following paramete
 
 | Parameter                 | Type      | Default       | Description  |
 |---------------------------|-----------|---------------|--------------|
-| BDATES_SOURCE             | String    |               | YAML-file to contain dates registry, see example format above. |
+| BDATES_SOURCE             | String    |               | YAML-file to contain dates registry, see example format above. Multiple sources can be set by separating them with ";", they will be merge before processing. |
 | BDATES_TEMPLATE           | Dict of Jinja2 templates |  | Two templates can be set for panel and list  |
 | BDATES_ITEM_TEMPLATE      | Dict of Jinja2 templates |  | Two templates can be set for panel and list  |
 | BDATES_PANEL_COLOR        | String    | panel-primary |  CSS class used to color the panel template in the default template. Possible values: panel-default, panel-primary, panel-success, panel-info, panel-warning, panel-danger |
@@ -116,7 +116,7 @@ Parameters for the plugin can be set in `pelicanconf.py' with following paramete
 | Parameter                 | Example value | Description  |
 |---------------------------|---------------|--------------|
 | BDATES                    | True          | Enable dates listing for the page | 
-| BDATES_SOURCE             | content/data/dates.yaml | Dates registry file |
+| BDATES_SOURCE             | content/data/dates.yaml | Dates registry file. Multiple sources can be set by separating them with ";", they will be merge before processing. |
 | BDATES_MODE               | panel         | Layout type, panel or list |
 | BDATES_PANEL_COLOR        | panel-info    | CSS class used to color the panel template in the default template. Possible values: panel-default, panel-primary, panel-success, panel-info, panel-warning, panel-danger |
 | BDATES_HEADER             | Personnel     | Header text  |
@@ -142,7 +142,7 @@ Date listing is available in template in variable `page.bdates` or `article.bdat
 
 | Parameter                 | Example value     | Description  |
 |---------------------------|-------------|--------------|
-| data-source               | content/data/dates.yaml | Date registry file
+| data-source               | content/data/dates.yaml | Date registry file. Multiple sources can be set by separating them with ";", they will be merge before processing. |
 | data-mode                 | panel       | Layout type, panel or list |
 | data-header               | Dates       | Header text |
 | data-category             | cat1, cat2 | Comma separated list of categories shown |

@@ -109,11 +109,29 @@ def load_dates_registry(source=None):
     :param source: filename of the data file
     :return: dates registry
     """
+    if ';' in source:
+        sources = source.split(';')
 
-    if source and os.path.isfile(source):
-        try:
-            with open(source, 'r') as field:
-                dates = yaml.load(field)
+    else:
+        sources = [source]
+
+    dates_data = []
+    for source in sources:
+        if os.path.isfile(source):
+            try:
+                with open(source, 'r') as field:
+                    dates = yaml.load(field)
+
+            except yaml.YAMLError as exc:
+                if hasattr(exc, 'problem_mark'):
+                    if exc.context is not None:
+                        logger.warn('`pelican-bdates` failed to load file [' + str(source) + '] with error ['+ str(exc.problem_mark) + '\n  ' + str(exc.problem) + ' ' + str(exc.context)+']')
+                    else:
+                        logger.warn('`pelican-bdates` failed to load file [' + str(source) + '] with error [' + str(exc.problem_mark) + '\n  ' + str(exc.problem) + ']')
+
+            except ValueError:
+                logger.warn('`pelican-bdates` failed to load file [' + str(source) + ']')
+                return False
 
             if 'data' in dates:
                 dates = dates['data']
@@ -121,15 +139,19 @@ def load_dates_registry(source=None):
             for item_id, item in enumerate(dates):
                 item['datetime'] = datetime.datetime.strptime(item['date'], '%d-%m-%Y')
 
-            dates.sort(key=operator.itemgetter('datetime'))
-            return dates
+            dates_data += dates
 
-        except ValueError:
-            logger.warn('`pelican-bdates` failed to load file [' + str(source) + ']')
+        else:
+            logger.warn('`pelican-bdates` file do not exists [' + str(source) + ']')
             return False
 
+
+    if dates_data:
+        # Sort based on datetime
+        dates_data.sort(key=operator.itemgetter('datetime'))
+
+        return dates_data
     else:
-        logger.warn('`pelican-bdates` failed to load file [' + str(source) + ']')
         return False
 
 
