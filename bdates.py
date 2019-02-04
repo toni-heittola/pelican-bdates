@@ -247,6 +247,7 @@ def generate(settings):
     if dates:
         html = "\n"
         count = 0
+
         for item_id, item in enumerate(dates):
             if settings['count']:
                 if count < settings['count']:
@@ -315,8 +316,8 @@ def bdates(content):
 
     # Template variable
     if bdates_settings['template-variable']:
-        # We have page variable set
-        bdates_settings['show'] = True
+        bdates_settings['show'] = True  # We have page variable set
+
         div_html = generate(
             settings=bdates_settings
         )
@@ -350,6 +351,7 @@ def bdates(content):
                 settings['category'] = [x.strip() for x in settings['category'].split(',')]
 
             settings['count'] = get_attribute(bdates_div.attrs, 'count', bdates_settings['count'])
+
             if settings['count']:
                 settings['count'] = int(settings['count'])
 
@@ -395,6 +397,7 @@ def process_page_metadata(generator, metadata):
 
     if u'styles' not in metadata:
         metadata[u'styles'] = []
+
     if u'scripts' not in metadata:
         metadata[u'scripts'] = []
 
