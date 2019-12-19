@@ -17,6 +17,7 @@ from pelican import signals, contents
 import datetime
 import yaml
 import operator
+from io import open
 
 logger = logging.getLogger(__name__)
 __version__ = '0.1.0'
@@ -121,10 +122,10 @@ def load_dates_registry(source=None):
             try:
                 from distutils.version import LooseVersion
                 if LooseVersion(str(yaml.__version__)) >= "5.1":
-                    with open(source, 'r') as field:
+                    with open(source, 'r', encoding='utf-8') as field:
                         dates = yaml.load(field, Loader=yaml.FullLoader)
                 else:
-                    with open(source, 'r') as field:
+                    with open(source, 'r', encoding='utf-8') as field:
                         dates = yaml.load(field)
 
             except yaml.YAMLError as exc:
