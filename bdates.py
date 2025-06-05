@@ -23,68 +23,117 @@ logger = logging.getLogger(__name__)
 __version__ = '0.1.0'
 
 bdates_default_settings = {
+    'template-mode': 'bs3',
     'panel-color': 'panel-default',
     'header': 'Dates',
     'mode': 'panel',
     'template': {
-        'panel': """
-            <div class="panel {{ panel_color }} hidden-print">
-              {% if header %}
-              <div class="panel-heading">
-                <h3 class="panel-title">{{header}}</h3>
-              </div>
-              {% endif %}
-              <ul class="bdates-container list-group">
-              {{list}}
-              </ul>
-            </div>
-         """,
-        'list': """
-            {% if header %}<h3 class="section-heading text-center">{{header}}</h3>{% endif %}
-            <div class="list-group bdates-container">
-            {{list}}
-            </div>
-        """},
-    'item-template': {
-        'panel': """
-            <a class="list-group-item {{item_color}}" href="{{item_url}}">
-            <div class="row">
-                <div class="col-md-12">
-                    <h5 class="list-group-item-heading {{item_css}}">
-                        <strong>{{item_date}}</strong>
-                    </h5>
+        'bs3': {
+            'panel': """
+                <div class="panel {{ panel_color }} hidden-print">
+                  {% if header %}
+                  <div class="panel-heading">
+                    <h3 class="panel-title">{{header}}</h3>
+                  </div>
+                  {% endif %}
+                  <ul class="bdates-container list-group">
+                  {{list}}
+                  </ul>
                 </div>
-                <div class="col-md-12">
-                    <h5 class="list-group-item-heading {{item_css}}">
-                        {{item_title}}
-                    {% if item_category %}
-                        <small class="list-group-item-text text-muted pull-right">{{item_category}}</small>
+             """,
+            'list': """
+                {% if header %}<h3 class="section-heading text-center">{{header}}</h3>{% endif %}
+                <div class="list-group bdates-container">
+                {{list}}
+                </div>
+            """},
+        'bs5': {
+            'panel': """
+                <div class="card hidden-print">
+                    {% if header %}
+                    <h5 class="card-header {{ panel_color }} ">
+                        {{header}}
+                    </h5>
                     {% endif %}
-                    </h5>
+                    <ul class="bdates-container list-group">
+                      {{list}}
+                    </ul>                                        
                 </div>
-            </div>
-            </a>
             """,
-        'list': """<a class="list-group-item {{item_color}}" href="{{item_url}}">
-            <div class="row">
-                <div class="col-md-9">                              
-                    <h4 class="list-group-item-heading {{item_css}}">
-                        {{item_title}}
-                    </h4>
+            'list': """
+                {% if header %}
+                <h3 class="section-heading text-center">{{header}}</h3>
+                {% endif %}
+                <div class="list-group bdates-container mb-3">
+                {{list}}
                 </div>
-                <div class="col-md-3">
-                    <h5 class="list-group-item-heading {{item_css}}">
-                        <strong>{{item_date}}</strong>
-                    </h5>
+            """},
+        },
+
+    'item-template': {
+        'bs3': {
+            'panel': """
+                <a class="list-group-item {{item_color}}" href="{{item_url}}">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h5 class="list-group-item-heading {{item_css}}"><strong>{{item_date}}</strong></h5>
+                    </div>
+                    <div class="col-md-12">
+                        <h5 class="list-group-item-heading {{item_css}}">{{item_title}}
+                        {% if item_category %}<small class="list-group-item-text text-muted pull-right">{{item_category}}</small>{% endif %}
+                        </h5>
+                    </div>
                 </div>
-                {% if item_category %}
-                <div class="col-md-12 col-sm-12">
-                {{item_category}}
+                </a>
+            """,
+            'list': """<a class="list-group-item {{item_color}}" href="{{item_url}}">
+                <div class="row">
+                    <div class="col-md-9">                              
+                        <h4 class="list-group-item-heading {{item_css}}">{{item_title}}</h4>
+                    </div>
+                    <div class="col-md-3">
+                        <h5 class="list-group-item-heading {{item_css}}"><strong>{{item_date}}</strong></h5>
+                    </div>
+                    {% if item_category %}
+                    <div class="col-md-12 col-sm-12">{{item_category}}</div>
+                    {% endif %}  
                 </div>
-                {% endif %}  
-            </div>
-            </a>
-        """},
+                </a>
+            """
+        },
+        'bs5': {
+            'panel': """
+                <a class="list-group-item {{item_color}}" href="{{item_url}}">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h5 class="list-group-item-heading {{item_css}}">
+                            <strong>{{item_date}}</strong>
+                        </h5>
+                    </div>
+                    <div class="col-md-12">
+                        <h5 class="list-group-item-heading {{item_css}}">{{item_title}}
+                        {% if item_category %}<small class="list-group-item-text text-muted pull-right">{{item_category}}</small>{% endif %}
+                        </h5>
+                    </div>
+                </div>
+                </a>
+            """,
+            'list': """<a class="list-group-item {{item_color}}" href="{{item_url}}">
+                <div class="row">
+                    <div class="col-md-9">                              
+                        <h4 class="list-group-item-heading {{item_css}}">{{item_title}}</h4>
+                    </div>
+                    <div class="col-md-3">
+                        <h5 class="list-group-item-heading {{item_css}}"><strong>{{item_date}}</strong></h5>
+                    </div>
+                    {% if item_category %}
+                    <div class="col-md-12 col-sm-12">{{item_category}}</div>
+                    {% endif %}  
+                </div>
+                </a>
+            """
+        }
+    },
     'data-source': None,
     'category': None,
     'count': None,
@@ -193,7 +242,7 @@ def item_link(item, settings):
         else:
             item_color = ''
 
-    template = Template(settings['item-template'][settings['mode']].strip('\t\r\n').replace('&gt;', '>').replace('&lt;', '<'))
+    template = Template(settings['item-template'][settings['template-mode']][settings['mode']].strip('\t\r\n').replace('&gt;', '>').replace('&lt;', '<'))
 
     if 'duration_days' not in item:
         item_date = item['datetime'].strftime(settings['date-format'])
@@ -292,7 +341,7 @@ def generate(settings):
                     count += 1
 
         html += "\n"
-        template = Template(settings['template'][settings['mode']].strip('\t\r\n').replace('&gt;', '>').replace('&lt;', '<'))
+        template = Template(settings['template'][settings['template-mode']][settings['mode']].strip('\t\r\n').replace('&gt;', '>').replace('&lt;', '<'))
 
         if count:
             return BeautifulSoup(
@@ -307,6 +356,31 @@ def generate(settings):
 
         else:
             return ''
+
+
+def process_panel_color(panel_color, mode='bs3'):
+    if mode == 'bs3':
+        if 'bg-' in panel_color:
+            panel_color = panel_color.replace('bg-', 'panel-')
+
+    elif mode == 'bs5':
+        if 'panel-' in panel_color:
+            panel_color = panel_color.replace('panel-', 'bg-')
+
+        if panel_color in ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark',
+                                       'body', 'white', 'transparent']:
+            panel_color = 'bg-' + panel_color
+
+        if panel_color == 'bg-default':
+            panel_color = 'bg-light'
+
+        if panel_color not in ['bg-light', 'bg-secondary', 'bg-primary', 'bg-success', 'bg-danger', 'bg-transparent']:
+            panel_color += ' text-white'
+        else:
+            panel_color += ' text-muted'
+
+
+    return panel_color
 
 
 def bdates(content):
@@ -362,6 +436,12 @@ def bdates(content):
                 settings['count'] = int(settings['count'])
 
             settings['panel-color'] = get_attribute(bdates_div.attrs, 'panel-color', bdates_default_settings['panel-color'])
+            if settings['template-mode'] == 'bs5':
+                settings['panel-color'] = process_panel_color(
+                    panel_color=settings['panel-color'],
+                    mode=settings['template-mode']
+                )
+
             settings['show-categories'] = get_attribute(bdates_div.attrs, 'show-categories', bdates_default_settings['show-categories']) in ['True', 'true']
             settings['date-format'] = get_attribute(bdates_div.attrs, 'date-format', bdates_default_settings['date-format'])
 
@@ -458,7 +538,7 @@ def move_resources(gen):
             os.makedirs(os.path.join(gen.output_path, 'theme', 'css'))
 
         for path in plugin_paths:
-            css_source = os.path.join(path, 'pelican-bdates', 'css.min', 'bdates.min.css')
+            css_source = os.path.join(path, 'pelican-bdates', 'css.min', 'bdates_'+bdates_settings['template-mode']+'.min.css')
 
             if os.path.isfile(css_source):
                 shutil.copyfile(css_source, css_target)
@@ -520,6 +600,9 @@ def init_default_config(pelican):
 
     if 'BDATES_HEADER' in pelican.settings:
         bdates_default_settings['header'] = pelican.settings['BDATES_HEADER']
+
+    if 'BDATES_TEMPLATE_MODE' in pelican.settings:
+        bdates_default_settings['template-mode'] = pelican.settings['BDATES_TEMPLATE_MODE']
 
     if 'BDATES_TEMPLATE' in pelican.settings:
         bdates_default_settings['template'].update(pelican.settings['BDATES_TEMPLATE'])
