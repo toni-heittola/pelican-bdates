@@ -101,6 +101,7 @@ Parameters for the plugin can be set in `pelicanconf.py' with following paramete
 
 | Parameter                 | Type      | Default       | Description  |
 |---------------------------|-----------|---------------|--------------|
+| BDATES_TEMPLATE_MODE      | String    | bs3           | Template mode, possible values bs3, bs5 |
 | BDATES_SOURCE             | String    |               | YAML-file to contain dates registry, see example format above. Multiple sources can be set by separating them with ";", they will be merge before processing. |
 | BDATES_TEMPLATE           | Dict of Jinja2 templates |  | Two templates can be set for panel and list  |
 | BDATES_ITEM_TEMPLATE      | Dict of Jinja2 templates |  | Two templates can be set for panel and list  |

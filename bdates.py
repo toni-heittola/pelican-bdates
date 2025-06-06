@@ -55,15 +55,11 @@ bdates_default_settings = {
                         {{header}}
                     </h5>
                     {% endif %}
-                    <ul class="bdates-container list-group">
-                      {{list}}
-                    </ul>                                        
+                    <ul class="bdates-container list-group">{{list}}</ul>                                        
                 </div>
             """,
             'list': """
-                {% if header %}
-                <h3 class="section-heading text-center">{{header}}</h3>
-                {% endif %}
+                {% if header %}<h3 class="section-heading text-center">{{header}}</h3>{% endif %}
                 <div class="list-group bdates-container mb-3">
                 {{list}}
                 </div>
