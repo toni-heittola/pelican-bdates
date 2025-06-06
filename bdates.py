@@ -49,7 +49,7 @@ bdates_default_settings = {
             """},
         'bs5': {
             'panel': """
-                <div class="card hidden-print">
+                <div class="card hidden-print mb-3">
                     {% if header %}
                     <h5 class="card-header {{ panel_color }} ">
                         {{header}}
@@ -59,7 +59,7 @@ bdates_default_settings = {
                 </div>
             """,
             'list': """
-                {% if header %}<h3 class="section-heading text-center">{{header}}</h3>{% endif %}
+                {% if header %}<h4 class="section-heading text-center">{{header}}</h4>{% endif %}
                 <div class="list-group bdates-container mb-3">
                 {{list}}
                 </div>
@@ -102,14 +102,14 @@ bdates_default_settings = {
                 <a class="list-group-item {{item_color}}" href="{{item_url}}">
                 <div class="row">
                     <div class="col-md-12">
-                        <h5 class="list-group-item-heading {{item_css}}">
+                        <h6 class="list-group-item-heading {{item_css}}">
                             <strong>{{item_date}}</strong>
-                        </h5>
+                        </h6>
                     </div>
                     <div class="col-md-12">
-                        <h5 class="list-group-item-heading {{item_css}}">{{item_title}}
+                        <h6 class="list-group-item-heading {{item_css}}">{{item_title}}
                         {% if item_category %}<small class="list-group-item-text text-muted pull-right">{{item_category}}</small>{% endif %}
-                        </h5>
+                        </h6>
                     </div>
                 </div>
                 </a>
@@ -339,6 +339,12 @@ def generate(settings):
         html += "\n"
         template = Template(settings['template'][settings['template-mode']][settings['mode']].strip('\t\r\n').replace('&gt;', '>').replace('&lt;', '<'))
 
+        if settings['template-mode'] == 'bs5':
+            settings['panel-color'] = process_panel_color(
+                panel_color=settings['panel-color'],
+                mode=settings['template-mode']
+            )
+
         if count:
             return BeautifulSoup(
                 template.render(
@@ -355,28 +361,40 @@ def generate(settings):
 
 
 def process_panel_color(panel_color, mode='bs3'):
+    text_color = ''
+
     if mode == 'bs3':
         if 'bg-' in panel_color:
             panel_color = panel_color.replace('bg-', 'panel-')
 
     elif mode == 'bs5':
-        if 'panel-' in panel_color:
+        # Convert bs3 colors
+        if panel_color.startswith('panel-'):
             panel_color = panel_color.replace('panel-', 'bg-')
+            if 'default' not in panel_color and '-subtle' not in panel_color:
+                panel_color += '-subtle'
 
-        if panel_color in ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark',
-                                       'body', 'white', 'transparent']:
-            panel_color = 'bg-' + panel_color
+        elif panel_color in ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'body', 'white', 'transparent']:
+            panel_color = 'bg-' + panel_color + '-subtle'
 
         if panel_color == 'bg-default':
-            panel_color = 'bg-light'
+            panel_color = 'bg-secondary-subtle'
 
-        if panel_color not in ['bg-light', 'bg-secondary', 'bg-primary', 'bg-danger', 'bg-transparent']:
-            panel_color += ' text-white'
-        else:
-            panel_color += ' text-muted'
+        # Determine the text color
+        # If subtle colors are used, use matching emphasis text color
+        if '-subtle' in panel_color and 'text-' not in panel_color:
+            text_color = ' ' + panel_color.replace('bg-', 'text-').replace('-subtle', '-emphasis')
 
+        # otherwise handcraft colors
+        elif '-subtle' not in panel_color:
+            if panel_color in ['bg-primary', 'bg-secondary', 'bg-success', 'bg-danger', 'bg-dark', 'bg-black']:
+                text_color = ' text-white'
+            elif panel_color in ['bg-warning', 'bg-info', 'bg-light']:
+                text_color = ' text-dark'
+            else:
+                text_color = ' text-muted'
 
-    return panel_color
+    return panel_color + text_color
 
 
 def bdates(content):
@@ -511,8 +529,10 @@ def process_page_metadata(generator, metadata):
         if bdates_settings['count']:
             bdates_settings['count'] = int(bdates_settings['count'])
 
-    if u'bdates_show_categories' in metadata:
-        bdates_settings['show-categories'] = metadata['bdates_show_categories']
+    if u'bdates_show_categories' in metadata and (metadata['bdates_show_categories'] == 'True' or metadata['bdates_show_categories'] == 'true'):
+        bdates_settings['show-categories'] = True
+    else:
+        bdates_settings['show-categories'] = False
 
     if u'bdates_date_format' in metadata:
         bdates_settings['date-format'] = metadata['bdates_date_format']
