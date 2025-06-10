@@ -479,13 +479,15 @@ def bdates(content):
         if 'styles' not in content.metadata:
             content.metadata[u'styles'] = []
 
-        for element in html_elements['js_include']:
-            if element not in content.metadata[u'scripts']:
-                content.metadata[u'scripts'].append(element)
+        if 'js_include' in html_elements:
+            for element in html_elements['js_include']:
+                if element not in content.metadata[u'scripts']:
+                    content.metadata[u'scripts'].append(element)
 
-        for element in html_elements['css_include']:
-            if element not in content.metadata[u'styles']:
-                content.metadata[u'styles'].append(element)
+        if 'css_include' in html_elements:
+            for element in html_elements['css_include']:
+                if element not in content.metadata[u'styles']:
+                    content.metadata[u'styles'].append(element)
 
     content._content = soup.decode()
 
